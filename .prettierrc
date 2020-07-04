@@ -1,0 +1,17 @@
+{
+  "eslintIntegration": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "disableLanguages": ["json"],
+  "useTabs": false,
+  "printWidth": 120,
+  "jsxBracketSameLine": false,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "[json]": {
+    "editor.formatOnSave": false
+  },
+  "tslint.autoFixOnSave": true,
+  "trailingComma": "none",
+  "arrowParens": "avoid"
+}
