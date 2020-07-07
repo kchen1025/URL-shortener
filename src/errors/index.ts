@@ -29,6 +29,7 @@ export abstract class ErrorBase extends Error {
   }
 }
 
+export class GenericError extends ErrorBase {}
 export class QueryError extends ErrorBase {}
 export class NotFoundError extends ErrorBase {}
 export class APIError extends ErrorBase {}
