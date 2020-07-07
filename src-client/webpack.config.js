@@ -13,7 +13,7 @@ module.exports = {
   devtool: 'source-map',
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: ['.ts', '.tsx', '.js', '.json']
+    extensions: ['.ts', '.tsx', '.js', '.json', '.styl']
   },
 
   module: {
@@ -26,7 +26,16 @@ module.exports = {
           configFileName: 'tsconfig.json'
         }
       },
-
+      {
+        test: /\.styl$/,
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader', options: { modules: true } },
+          {
+            loader: 'stylus-loader'
+          }
+        ]
+      },
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {
         enforce: 'pre',

@@ -1,9 +1,6 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
-import { Hello } from "./components/Hello";
+import { Home } from './views/Home';
 
-ReactDOM.render(
-  <Hello compiler="TypeScript" framework="React" />,
-  document.getElementById("example")
-);
+ReactDOM.render(<Home />, document.getElementById('root'));
