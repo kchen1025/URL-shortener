@@ -2,12 +2,12 @@
   "compilerOptions": {
     "outDir": "../public/dist/",
     "sourceMap": true,
-    "noImplicitAny": true,
     "module": "commonjs",
     "target": "es2015",
-    "jsx": "react"
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noImplicitAny": false
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

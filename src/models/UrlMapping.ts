@@ -11,6 +11,21 @@ class UrlMapping extends Model {
     super(TABLE_NAME);
   }
 
+  public async getAll(): Promise<UrlMappingType[]> {
+    try {
+      const result = await this.pool.query(
+        `
+        select * from url_mapping where visited < 10;
+        `,
+        []
+      );
+      return result && result.rows && result.rows.length ? result.rows : [];
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Error retrieving shortId all url mappings`);
+    }
+  }
+
   public async getByShortId(shortId: string): Promise<UrlMappingType> {
     try {
       const result = await this.pool.query(

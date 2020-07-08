@@ -5,6 +5,8 @@
     "object-literal-sort-keys": false,
     "trailing-comma": false,
     "interface-name": false,
-    "quotemark": [true, "single", "avoid-escape", "jsx-double"]
+    "quotemark": [true, "single", "avoid-escape", "jsx-double"],
+    "jsx-no-multiline-js": false,
+    "defaultSeverity": "warning"
   }
 }
