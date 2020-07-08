@@ -67,6 +67,7 @@ apiRouter.get('/mapping/:shortId', async (req: express.Request, res: express.Res
 apiRouter.post('/generateShortId', async (req, res, next) => {
   // validate it is a properly formatted url
   const { originalUrl } = req.body;
+  console.log(req.body);
 
   const schema: Joi.ObjectSchema = Joi.object().keys({
     originalUrl: Joi.string().uri().required()

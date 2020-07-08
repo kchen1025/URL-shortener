@@ -11,7 +11,6 @@ function Alert(props: any) {
 
 export const Home = (props: HomeProps) => {
   const [mappings, setMappings] = useState([]);
-  const [errors, setErrors] = useState([]);
   const [value, setValue] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -20,7 +19,7 @@ export const Home = (props: HomeProps) => {
     response
       .json()
       .then(res => setMappings(res))
-      .catch(err => setErrors(err));
+      .catch(err => setMappings(err));
   }
 
   async function submitMapping(url) {
@@ -30,6 +29,9 @@ export const Home = (props: HomeProps) => {
         Accept: 'application/json',
         'Content-Type': 'application/json'
       },
+      mode: 'cors',
+      credentials: 'same-origin',
+      cache: 'no-cache',
       body: JSON.stringify({ originalUrl: url })
     });
     const content = await response.json();
@@ -50,9 +52,12 @@ export const Home = (props: HomeProps) => {
 
     try {
       setSnackbarOpen(true);
-      // await submitMapping(value);
+      const result = await submitMapping(value);
+      if (result) {
+        setMappings([...mappings, result]);
+      }
     } catch (err) {
-      setErrors(err);
+      setMappings(err);
     }
   };
 
@@ -64,8 +69,8 @@ export const Home = (props: HomeProps) => {
   };
 
   return (
-    <div>
-      <h1 className={styles.container}>Url Shortener</h1>
+    <div className={styles.container}>
+      <h1>Url Shortener</h1>
 
       <form onSubmit={handleSubmit}>
         <TextField value={value} onChange={handleChange} />
