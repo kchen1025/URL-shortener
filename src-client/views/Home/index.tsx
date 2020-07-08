@@ -1,6 +1,7 @@
 import { Button, Snackbar, TextField } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
+import API from '../../utils/api';
 import styles from './styles.styl';
 
 interface HomeProps {}
@@ -9,33 +10,40 @@ function Alert(props: any) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
+
+const initialState = { variant: 'info', message: null };
+function reducer(state, action) {
+  switch (action.type) {
+    case 'set_message':
+      return {
+        variant: action.payload.variant,
+        message: action.payload.message
+      };
+    case 'clear_message':
+      return { ...initialState };
+    default:
+      throw new Error();
+  }
+}
+
 export const Home = (props: HomeProps) => {
   const [mappings, setMappings] = useState([]);
   const [value, setValue] = useState('');
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarState, dispatch] = useReducer(reducer, initialState);
 
   async function getMappings() {
-    const response = await fetch(`http://localhost:8080/api/mapping`);
-    response
-      .json()
-      .then(res => setMappings(res))
-      .catch(err => setMappings(err));
+    try {
+      const response = await API.get('/api/mapping');
+      setMappings(response);
+    } catch (err) {
+      enqueueNotification('Error retrieving mappings', 'error');
+    }
   }
 
   async function submitMapping(url) {
-    const response = await fetch('http://localhost:8080/api/generateShortId', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      mode: 'cors',
-      credentials: 'same-origin',
-      cache: 'no-cache',
-      body: JSON.stringify({ originalUrl: url })
-    });
-    const content = await response.json();
-    return content;
+    const response = await API.post('/api/generateShortId', { originalUrl: url });
+    return response;
   }
 
   // pull in all shortened urls
@@ -51,21 +59,37 @@ export const Home = (props: HomeProps) => {
     event.preventDefault();
 
     try {
-      setSnackbarOpen(true);
       const result = await submitMapping(value);
       if (result) {
         setMappings([...mappings, result]);
       }
+      enqueueNotification('successful submission', 'success');
     } catch (err) {
-      setMappings(err);
+      enqueueNotification('Error submitting url', 'error');
     }
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+  const handleClose = () => {
+    dispatch({ type: 'clear_message' });
+  };
+
+  const enqueueNotification = (message: string, variant: NotificationType) => {
+    switch (variant) {
+      case 'success':
+        dispatch({ type: 'set_message', payload: { message, variant } });
+        break;
+      case 'info':
+        dispatch({ type: 'set_message', payload: { message, variant } });
+        break;
+      case 'warning':
+        dispatch({ type: 'set_message', payload: { message, variant } });
+        break;
+      case 'error':
+        dispatch({ type: 'set_message', payload: { message, variant } });
+        break;
+      default:
+        break;
     }
-    setSnackbarOpen(false);
   };
 
   return (
@@ -91,9 +115,9 @@ export const Home = (props: HomeProps) => {
         })}
       </section>
 
-      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success">
-          This is a success message!
+      <Snackbar open={!!snackbarState.message} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={snackbarState.variant}>
+          {snackbarState.message}
         </Alert>
       </Snackbar>
     </div>
