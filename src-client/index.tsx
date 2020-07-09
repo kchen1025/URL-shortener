@@ -1,6 +1,18 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { SnackbarProvider } from 'notistack';
 import { Home } from './views/Home';
 
-ReactDOM.render(<Home />, document.getElementById('root'));
+ReactDOM.render(
+  <SnackbarProvider
+    autoHideDuration={3000}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right'
+    }}
+  >
+    <Home />
+  </SnackbarProvider>,
+  document.getElementById('root')
+);

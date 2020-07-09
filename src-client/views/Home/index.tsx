@@ -1,43 +1,23 @@
 import { Button, Snackbar, TextField } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useReducer, useState } from 'react';
 import API from '../../utils/api';
 import styles from './styles.styl';
 
 interface HomeProps {}
 
-function Alert(props: any) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-type NotificationType = 'success' | 'info' | 'warning' | 'error';
-
-const initialState = { variant: 'info', message: null };
-function reducer(state, action) {
-  switch (action.type) {
-    case 'set_message':
-      return {
-        variant: action.payload.variant,
-        message: action.payload.message
-      };
-    case 'clear_message':
-      return { ...initialState };
-    default:
-      throw new Error();
-  }
-}
-
 export const Home = (props: HomeProps) => {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
   const [mappings, setMappings] = useState([]);
   const [value, setValue] = useState('');
-  const [snackbarState, dispatch] = useReducer(reducer, initialState);
 
   async function getMappings() {
     try {
       const response = await API.get('/api/mapping');
       setMappings(response);
     } catch (err) {
-      enqueueNotification('Error retrieving mappings', 'error');
+      enqueueSnackbar('Error retrieving mappings', { variant: 'error' });
     }
   }
 
@@ -63,32 +43,9 @@ export const Home = (props: HomeProps) => {
       if (result) {
         setMappings([...mappings, result]);
       }
-      enqueueNotification('successful submission', 'success');
+      enqueueSnackbar('successful submission', { variant: 'success' });
     } catch (err) {
-      enqueueNotification('Error submitting url', 'error');
-    }
-  };
-
-  const handleClose = () => {
-    dispatch({ type: 'clear_message' });
-  };
-
-  const enqueueNotification = (message: string, variant: NotificationType) => {
-    switch (variant) {
-      case 'success':
-        dispatch({ type: 'set_message', payload: { message, variant } });
-        break;
-      case 'info':
-        dispatch({ type: 'set_message', payload: { message, variant } });
-        break;
-      case 'warning':
-        dispatch({ type: 'set_message', payload: { message, variant } });
-        break;
-      case 'error':
-        dispatch({ type: 'set_message', payload: { message, variant } });
-        break;
-      default:
-        break;
+      enqueueSnackbar('Error submitting url', { variant: 'error' });
     }
   };
 
@@ -114,12 +71,6 @@ export const Home = (props: HomeProps) => {
           );
         })}
       </section>
-
-      <Snackbar open={!!snackbarState.message} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={snackbarState.variant}>
-          {snackbarState.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
