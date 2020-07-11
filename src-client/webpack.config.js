@@ -59,7 +59,8 @@ module.exports = {
     historyApiFallback: true,
     publicPath: '/dist/',
     proxy: {
-      '/api': 'http://localhost:3000'
+      '/api': 'http://localhost:3000',
+      '/in': 'http://localhost:3000'
     }
   }
 };

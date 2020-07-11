@@ -1,9 +1,8 @@
 import * as express from 'express';
 import * as Joi from 'joi';
-import * as shortid from 'shortid';
-import { GenericError, NotFoundError, ValidationError } from '../errors';
-import UrlMapping from '../models/UrlMapping';
-import { UrlMappingType } from '../types';
+import { GenericError, ValidationError } from '../../errors';
+import UrlMapping from '../../models/UrlMapping';
+import { UrlMappingType } from '../../types';
 
 export const apiRouter = express.Router();
 
@@ -19,43 +18,6 @@ apiRouter.get('/mapping', async (req: express.Request, res: express.Response, ne
   } catch (err) {
     console.error(err);
     return next(new GenericError(`Error occured retrieving url mappings`));
-  }
-});
-
-/**
- * GET /api/mapping/:shortId
- * @param req.params.shortId {String} shortId to be retrieved
- * Pass a shortId to be retrieved from the database, if success, will redirect.
- * Otherwise, throw an error
- */
-apiRouter.get('/mapping/:shortId', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const { shortId } = req.params;
-
-  const schema: Joi.ObjectSchema = Joi.object().keys({
-    shortId: Joi.string().required()
-  });
-
-  // validate req params
-  const validation: Joi.ValidationResult<any> = Joi.validate(req.params, schema);
-  if (validation.error) {
-    return next(new ValidationError(validation.error.message, `Improper shortId. Received: ${shortId}`));
-  }
-
-  // validate shortId
-  if (!shortid.isValid(shortId)) {
-    return next(new ValidationError('ShortId is invalid'));
-  }
-
-  const UrlMappingConstructor = new UrlMapping();
-  try {
-    const result: UrlMappingType = await UrlMappingConstructor.getByShortId(shortId);
-    if (!result.long_url) {
-      return next(new NotFoundError(`No url mapping was found for shortId ${shortId}`));
-    }
-    res.redirect(result.long_url);
-  } catch (err) {
-    console.error(err);
-    return next(new GenericError(`Error occured long url for shortId ${shortId}`));
   }
 });
 

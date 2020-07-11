@@ -1,34 +1,55 @@
-import { Button, Snackbar, TextField } from '@material-ui/core';
+import { Button, makeStyles, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import LinkRow from '../../components/LinkRow';
+import { IUrlMappingResponse } from '../../types';
 import API from '../../utils/api';
 import styles from './styles.styl';
 
-interface HomeProps {}
+const useStyles = makeStyles({
+  inputLabelRoot: {
+    color: 'white'
+  },
+  inputRoot: {
+    color: 'white',
+    width: '25rem'
+  },
+  inputUnderline: {
+    '&:before': {
+      borderBottomColor: 'white'
+    },
+    '&:hover:before': {
+      borderBottomColor: ['white', '!important']
+    }
+    // '&:after': {
+    //   borderBottomColor: colors.white,
+    // },
+  },
+  buttonRoot: {
+    width: '10rem',
+    marginLeft: '10px'
+  }
+});
 
-export const Home = (props: HomeProps) => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+export const Home = () => {
+  const { enqueueSnackbar } = useSnackbar();
 
   const [mappings, setMappings] = useState([]);
   const [value, setValue] = useState('');
 
-  async function getMappings() {
-    try {
-      const response = await API.get('/api/mapping');
-      setMappings(response);
-    } catch (err) {
-      enqueueSnackbar('Error retrieving mappings', { variant: 'error' });
-    }
-  }
-
-  async function submitMapping(url) {
-    const response = await API.post('/api/generateShortId', { originalUrl: url });
-    return response;
-  }
+  const classes = useStyles();
 
   // pull in all shortened urls
   useEffect(() => {
-    getMappings();
+    async function run() {
+      try {
+        const dbMappings: IUrlMappingResponse[] = await getMappings();
+        setMappings(dbMappings);
+      } catch (err) {
+        enqueueSnackbar('Error pulling url mappings', { variant: 'error' });
+      }
+    }
+    run();
   }, []);
 
   const handleChange = event => {
@@ -46,31 +67,44 @@ export const Home = (props: HomeProps) => {
       enqueueSnackbar('successful submission', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar('Error submitting url', { variant: 'error' });
+    } finally {
+      setValue('');
     }
   };
 
   return (
-    <div className={styles.container}>
-      <h1>Url Shortener</h1>
+    <div>
+      <nav className={styles.navigation}>
+        <h1>URL Shortener</h1>
+      </nav>
+      <div className={styles.placeholder} />
 
-      <form onSubmit={handleSubmit}>
-        <TextField value={value} onChange={handleChange} />
-        <Button type="submit">shorten</Button>
+      <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <TextField
+          InputLabelProps={{ classes: { root: classes.inputLabelRoot } }}
+          InputProps={{ classes: { root: classes.inputRoot, underline: classes.inputUnderline } }}
+          label="Shorten your link"
+          value={value}
+          onChange={handleChange}
+        />
+        <Button classes={{ root: classes.buttonRoot }} variant="contained" color="primary" type="submit">
+          shorten
+        </Button>
       </form>
 
       <section>
-        {mappings.map((elem, i) => {
-          return (
-            <div key={`elem-${i}`}>
-              <span>{elem.long_url}</span>
-              <span> </span>
-              <span>{elem.short_code}</span>
-              <span> </span>
-              <span>{elem.visited}</span>
-            </div>
-          );
-        })}
+        {mappings.map((elem, i) => (
+          <LinkRow key={`elem-${i}`} mapping={elem} />
+        ))}
       </section>
     </div>
   );
 };
+
+async function getMappings(): Promise<IUrlMappingResponse[]> {
+  return API.get('/api/mapping');
+}
+
+async function submitMapping(url): Promise<IUrlMappingResponse[]> {
+  return API.post('/api/generateShortId', { originalUrl: url });
+}

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import './main.styl';
 
 import { SnackbarProvider } from 'notistack';
 import { Home } from './views/Home';
