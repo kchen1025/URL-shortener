@@ -53,7 +53,7 @@ export const Home = () => {
         const dbMappings: IUrlMappingResponse[] = await getMappings();
         setMappings(dbMappings);
       } catch (err) {
-        enqueueSnackbar('Error pulling url mappings', { variant: 'error' });
+        enqueueSnackbar(`Error pulling url mappings: ${err.friendly || ''}`, { variant: 'error' });
       } finally {
         setTimeout(() => {
           setContentLoading(false);
@@ -77,7 +77,7 @@ export const Home = () => {
       }
       enqueueSnackbar('successful submission', { variant: 'success' });
     } catch (err) {
-      enqueueSnackbar('Error submitting url', { variant: 'error' });
+      enqueueSnackbar(`Error submitting url: ${err.friendly || ''}`, { variant: 'error' });
     } finally {
       setValue('');
       // leave some time for the page to load
@@ -85,6 +85,20 @@ export const Home = () => {
         setSubmissionLoading(false);
       }, 500);
     }
+  };
+
+  // update the count of visited link
+  const handleUpdate = (id: number) => {
+    const newMappings: IUrlMappingResponse[] = [];
+
+    for (const elem of mappings) {
+      if (elem.id === id) {
+        newMappings.push({ ...elem, visited: elem.visited + 1 });
+      } else {
+        newMappings.push({ ...elem });
+      }
+    }
+    setMappings(newMappings);
   };
 
   return (
@@ -119,7 +133,7 @@ export const Home = () => {
             <CircularProgress color="secondary" size={40} classes={{ root: classes.loadingRoot }} />
           </div>
         ) : (
-          mappings.map((elem, i) => <LinkRow key={`elem-${i}`} mapping={elem} />)
+          mappings.map((elem, i) => <LinkRow key={`elem-${i}`} mapping={elem} handleUpdate={handleUpdate} />)
         )}
       </section>
     </div>
