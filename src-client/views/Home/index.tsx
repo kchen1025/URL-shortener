@@ -93,7 +93,9 @@ export const Home = () => {
 
     for (const elem of mappings) {
       if (elem.id === id) {
-        newMappings.push({ ...elem, visited: elem.visited + 1 });
+        if (elem.visited < 9) {
+          newMappings.push({ ...elem, visited: elem.visited + 1 });
+        }
       } else {
         newMappings.push({ ...elem });
       }
@@ -133,7 +135,9 @@ export const Home = () => {
             <CircularProgress color="secondary" size={40} classes={{ root: classes.loadingRoot }} />
           </div>
         ) : (
-          mappings.map((elem, i) => <LinkRow key={`elem-${i}`} mapping={elem} handleUpdate={handleUpdate} />)
+          mappings
+            .sort((a, b) => a.visited - b.visited)
+            .map((elem, i) => <LinkRow key={`elem-${i}`} mapping={elem} handleUpdate={handleUpdate} />)
         )}
       </section>
     </div>

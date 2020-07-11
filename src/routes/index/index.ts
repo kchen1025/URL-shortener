@@ -34,8 +34,8 @@ indexRouter.get('/:shortId', async (req: express.Request, res: express.Response,
   const UrlMappingConstructor = new UrlMapping();
   try {
     const originalResult: UrlMappingType = await UrlMappingConstructor.getByShortId(shortId);
-    if (originalResult.visited > 10) {
-      return next(new GenericError(`Short id ${shortId} has been used more than 10 times and is invalid`));
+    if (originalResult.visited >= 10) {
+      return res.send('Link has been used 10 times, no longer valid');
     }
 
     // update visited count
