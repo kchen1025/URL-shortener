@@ -26,7 +26,7 @@ apiRouter.get('/mapping', async (req: express.Request, res: express.Response, ne
  * Get mapping row for a specific id (for testing purposes)
  */
 apiRouter.get('/mapping/:mappingId', async (req, res, next) => {
-  const { mappingId }: { mappingId: string } = req.params;
+  const { mappingId } = req.params;
 
   // insert into db, on conflict, we want to return an error here
   const UrlMappingConstructor = new UrlMapping();
@@ -73,7 +73,7 @@ apiRouter.post('/generateShortId', async (req, res, next) => {
  * Sets a mapping row to visited count (for testing purposes)
  */
 apiRouter.post('/test/:mappingId', async (req, res, next) => {
-  const { mappingId }: { mappingId: string } = req.params;
+  const { mappingId } = req.params;
   const { visited }: { visited: number } = req.body;
 
   // insert into db, on conflict, we want to return an error here
