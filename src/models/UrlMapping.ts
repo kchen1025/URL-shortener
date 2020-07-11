@@ -41,6 +41,21 @@ class UrlMapping extends Model {
     }
   }
 
+  public async getById(id: number): Promise<UrlMappingType> {
+    try {
+      const result = await this.pool.query(
+        `
+        select * from url_mapping where id=$1;
+        `,
+        [id]
+      );
+      return result && result.rows && result.rows.length ? result.rows[0] : UrlMappingType;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Error retrieving by id ${id}`);
+    }
+  }
+
   public async updateVisitedById(id: number, visited: number): Promise<UrlMappingType> {
     try {
       const result = await this.pool.query(

@@ -22,6 +22,24 @@ apiRouter.get('/mapping', async (req: express.Request, res: express.Response, ne
 });
 
 /**
+ * GET /api/mapping/:mappingId
+ * Get mapping row for a specific id (for testing purposes)
+ */
+apiRouter.get('/mapping/:mappingId', async (req, res, next) => {
+  const { mappingId }: { mappingId: string } = req.params;
+
+  // insert into db, on conflict, we want to return an error here
+  const UrlMappingConstructor = new UrlMapping();
+  let storedRecord: UrlMappingType | null = null;
+  try {
+    storedRecord = await UrlMappingConstructor.getById(parseInt(mappingId, 10));
+  } catch (err) {
+    return next(new GenericError(err, `Unable to get row by id ${mappingId}`));
+  }
+  res.send(storedRecord);
+});
+
+/**
  * POST /api/generateShortId
  * @param req.body.originalUrl {String} the original URL to be shortened
  * Send a request to generate a new shortId based on originalUrl, and return the new id
