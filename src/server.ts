@@ -34,7 +34,4 @@ app.use('/api', apiRouter);
 // error handler, parse out specific errors here
 app.use(errorHandler);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is up! at ${port}`);
-});
+export { app };
