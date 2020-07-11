@@ -29,7 +29,6 @@ apiRouter.get('/mapping', async (req: express.Request, res: express.Response, ne
 apiRouter.post('/generateShortId', async (req, res, next) => {
   // validate it is a properly formatted url
   const { originalUrl } = req.body;
-  console.log(req.body);
 
   const schema: Joi.ObjectSchema = Joi.object().keys({
     originalUrl: Joi.string().uri().required()
@@ -41,12 +40,31 @@ apiRouter.post('/generateShortId', async (req, res, next) => {
 
   // insert into db, on conflict, we want to return an error here
   const UrlMappingConstructor = new UrlMapping();
-  let storedRecord = null;
+  let storedRecord: UrlMappingType | null = null;
   try {
     storedRecord = await UrlMappingConstructor.storeUrl(originalUrl);
   } catch (err) {
     return next(new GenericError(err, `Unable to store url ${originalUrl}`));
   }
+  res.send(storedRecord);
+});
 
+/**
+ * POST /api/test/:mappingId
+ * @param req.body.visited {Number} number to set visited to
+ * Sets a mapping row to visited count (for testing purposes)
+ */
+apiRouter.post('/test/:mappingId', async (req, res, next) => {
+  const { mappingId }: { mappingId: string } = req.params;
+  const { visited }: { visited: number } = req.body;
+
+  // insert into db, on conflict, we want to return an error here
+  const UrlMappingConstructor = new UrlMapping();
+  let storedRecord: UrlMappingType | null = null;
+  try {
+    storedRecord = await UrlMappingConstructor.updateVisitedById(parseInt(mappingId, 10), visited);
+  } catch (err) {
+    return next(new GenericError(err, `Unable to update visited by id ${mappingId}`));
+  }
   res.send(storedRecord);
 });
