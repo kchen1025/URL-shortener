@@ -1,5 +1,5 @@
 .linkRowContainer
-  width: fit-content
+  width: 80%
   margin: 0.5rem auto
   padding: 1rem
   background: #242525
@@ -7,7 +7,22 @@
   font-weight: 200
   border-radius: 4px
   display: flex
+  justify-content: space-between
+  
 
+.linkRow
+  margin: 0 1rem
+  white-space: nowrap
+  text-overflow: ellipsis
+  overflow: hidden
 
-  .linkRow
-    margin: 0 1rem
+  &:nth-child(1)
+    width: 14rem
+    
+  &:nth-child(2)    
+    width: 21rem
+
+  &:nth-child(3)
+    width: 2rem
+    
+

@@ -1,4 +1,4 @@
-import { Button, makeStyles, TextField } from '@material-ui/core';
+import { Button, CircularProgress, makeStyles, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import LinkRow from '../../components/LinkRow';
@@ -27,7 +27,11 @@ const useStyles = makeStyles({
   },
   buttonRoot: {
     width: '10rem',
+    height: '2.3rem',
     marginLeft: '10px'
+  },
+  loadingRoot: {
+    margin: 'auto'
   }
 });
 
@@ -36,6 +40,8 @@ export const Home = () => {
 
   const [mappings, setMappings] = useState([]);
   const [value, setValue] = useState('');
+  const [submissionLoading, setSubmissionLoading] = useState(false);
+  const [contentLoading, setContentLoading] = useState(false);
 
   const classes = useStyles();
 
@@ -43,10 +49,15 @@ export const Home = () => {
   useEffect(() => {
     async function run() {
       try {
+        setContentLoading(true);
         const dbMappings: IUrlMappingResponse[] = await getMappings();
         setMappings(dbMappings);
       } catch (err) {
         enqueueSnackbar('Error pulling url mappings', { variant: 'error' });
+      } finally {
+        setTimeout(() => {
+          setContentLoading(false);
+        }, 500);
       }
     }
     run();
@@ -58,7 +69,7 @@ export const Home = () => {
 
   const handleSubmit = async event => {
     event.preventDefault();
-
+    setSubmissionLoading(true);
     try {
       const result = await submitMapping(value);
       if (result) {
@@ -69,6 +80,10 @@ export const Home = () => {
       enqueueSnackbar('Error submitting url', { variant: 'error' });
     } finally {
       setValue('');
+      // leave some time for the page to load
+      setTimeout(() => {
+        setSubmissionLoading(false);
+      }, 500);
     }
   };
 
@@ -87,15 +102,25 @@ export const Home = () => {
           value={value}
           onChange={handleChange}
         />
-        <Button classes={{ root: classes.buttonRoot }} variant="contained" color="primary" type="submit">
-          shorten
+        <Button
+          disabled={submissionLoading}
+          classes={{ root: classes.buttonRoot }}
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
+          {submissionLoading ? <CircularProgress color="secondary" size={20} /> : 'Shorten'}
         </Button>
       </form>
 
       <section>
-        {mappings.map((elem, i) => (
-          <LinkRow key={`elem-${i}`} mapping={elem} />
-        ))}
+        {contentLoading ? (
+          <div className={styles.loaderContainer}>
+            <CircularProgress color="secondary" size={40} classes={{ root: classes.loadingRoot }} />
+          </div>
+        ) : (
+          mappings.map((elem, i) => <LinkRow key={`elem-${i}`} mapping={elem} />)
+        )}
       </section>
     </div>
   );
