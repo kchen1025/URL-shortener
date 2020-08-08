@@ -1,4 +1,4 @@
-import { Pool, PoolClient } from 'pg';
+import { Pool } from 'pg';
 import { pool } from './pool';
 
 class Model {
@@ -8,7 +8,6 @@ class Model {
   constructor(table: string) {
     this.pool = pool;
     this.table = table;
-    this.pool.on('error', (err: Error, client: PoolClient) => `Error, ${err}, on idle client${client}`);
   }
 
   public async queryPromise(query: string, values?: any[]) {
