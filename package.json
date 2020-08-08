@@ -9,7 +9,7 @@
     "build": "tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "dev:client": "npm run dev --prefix=src-client",
-    "dev-all": "concurrently \"npm run dev\" \"npm run dev --prefix src-client\"",
+    "dev-all": "concurrently \"npm run debug\" \"npm run dev --prefix src-client\"",
     "build-all": "npm run build && npm run build --prefix src-client",
     "lint-all": "tslint -c tslint.json -p tsconfig.json && npm run lint --prefix src-client",
     "db": "ts-node ./src/utils/runQuery.ts",

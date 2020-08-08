@@ -107,6 +107,7 @@ export const Home = () => {
     <div>
       <nav className={styles.navigation}>
         <h1>URL Shortener</h1>
+        <a href="/auth/logout">logout</a>
       </nav>
       <div className={styles.placeholder} />
 

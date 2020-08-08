@@ -50,9 +50,11 @@ authRouter.get('/logout', (req, res) => {
   if (port !== undefined && port !== 80 && port !== 443) {
     returnTo += ':' + port;
   }
-  const logoutURL = new url.URL(util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN));
+  returnTo += '/user';
+
+  const logoutURL = new url.URL(util.format('https://%s/v2/logout', process.env.PROJ_AUTH0_DOMAIN));
   const searchString = querystring.stringify({
-    client_id: process.env.AUTH0_CLIENT_ID,
+    client_id: process.env.PROJ_AUTH0_CLIENT_ID,
     returnTo
   });
   logoutURL.search = searchString;

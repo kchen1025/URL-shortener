@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as Joi from 'joi';
 import { GenericError, ValidationError } from '../../errors';
+import { secureHandler } from '../../middlewares';
 import UrlMapping from '../../models/UrlMapping';
 import { UrlMappingType } from '../../types';
 
@@ -10,22 +11,26 @@ export const apiRouter = express.Router();
  * GET /api/mapping
  * Gets all mappings
  */
-apiRouter.get('/mapping', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const UrlMappingConstructor = new UrlMapping();
-  try {
-    const result: UrlMappingType[] = await UrlMappingConstructor.getAll();
-    res.send(result);
-  } catch (err) {
-    console.error(err);
-    return next(new GenericError(`Error occured retrieving url mappings`));
+apiRouter.get(
+  '/mapping',
+  secureHandler(),
+  async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const UrlMappingConstructor = new UrlMapping();
+    try {
+      const result: UrlMappingType[] = await UrlMappingConstructor.getAll();
+      res.send(result);
+    } catch (err) {
+      console.error(err);
+      return next(new GenericError(`Error occured retrieving url mappings`));
+    }
   }
-});
+);
 
 /**
  * GET /api/mapping/:mappingId
  * Get mapping row for a specific id (for testing purposes)
  */
-apiRouter.get('/mapping/:mappingId', async (req, res, next) => {
+apiRouter.get('/mapping/:mappingId', secureHandler(), async (req, res, next) => {
   const { mappingId } = req.params;
 
   // insert into db, on conflict, we want to return an error here
@@ -44,7 +49,7 @@ apiRouter.get('/mapping/:mappingId', async (req, res, next) => {
  * @param req.body.originalUrl {String} the original URL to be shortened
  * Send a request to generate a new shortId based on originalUrl, and return the new id
  */
-apiRouter.post('/generateShortId', async (req, res, next) => {
+apiRouter.post('/generateShortId', secureHandler(), async (req, res, next) => {
   // validate it is a properly formatted url
   const { originalUrl } = req.body;
 
@@ -72,7 +77,7 @@ apiRouter.post('/generateShortId', async (req, res, next) => {
  * @param req.body.visited {Number} number to set visited to
  * Sets a mapping row to visited count (for testing purposes)
  */
-apiRouter.post('/test/:mappingId', async (req, res, next) => {
+apiRouter.post('/test/:mappingId', secureHandler(), async (req, res, next) => {
   const { mappingId } = req.params;
   const { visited }: { visited: number } = req.body;
 

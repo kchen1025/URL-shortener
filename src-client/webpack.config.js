@@ -60,6 +60,8 @@ module.exports = {
     publicPath: '/dist/',
     proxy: {
       '/api': 'http://localhost:3000',
+      '/auth': 'http://localhost:3000',
+      '/user': 'http://localhost:3000',
       '/in': 'http://localhost:3000'
     }
   }
