@@ -16,13 +16,13 @@ export const errorHandler = (
     message: 'Api error occurred'
   };
 
-  if (output.message) {
+  if (err.message) {
     output.message = err.message;
   }
-  if (output.friendly) {
+  if (err.friendly) {
     output.friendly = err.friendly;
   }
-  if (output.httpStatusCode) {
+  if (err.httpStatusCode) {
     output.httpStatusCode = err.httpStatusCode;
   }
 

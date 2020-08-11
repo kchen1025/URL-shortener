@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import { errorHandler } from './middlewares';
 import { apiRouter } from './routes/api';
 import { indexRouter } from './routes/index';
+import { checkJwt } from './utils/jwt';
 
 const app = express();
 
@@ -28,8 +29,14 @@ app.get('/*', (req, res, next) => {
 // log requests
 app.use(morgan('tiny'));
 
+app.use(checkJwt);
+
 app.use('/in', indexRouter);
 app.use('/api', apiRouter);
+
+app.get('/yeet', (req, res) => {
+  res.send('hello');
+});
 
 // error handler, parse out specific errors here
 app.use(errorHandler);

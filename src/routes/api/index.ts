@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 import { GenericError, ValidationError } from '../../errors';
 import UrlMapping from '../../models/UrlMapping';
 import { UrlMappingType } from '../../types';
+import { checkJwt } from '../../utils/jwt';
 
 export const apiRouter = express.Router();
 

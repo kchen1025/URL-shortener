@@ -1,7 +1,10 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import { Button, CircularProgress, makeStyles, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import LinkRow from '../../components/LinkRow';
+import LoginButton from '../../components/LoginButton';
+import LogoutButton from '../../components/LogoutButton';
 import { IUrlMappingResponse } from '../../types';
 import API from '../../utils/api';
 import styles from './styles.styl';
@@ -21,9 +24,6 @@ const useStyles = makeStyles({
     '&:hover:before': {
       borderBottomColor: ['white', '!important']
     }
-    // '&:after': {
-    //   borderBottomColor: colors.white,
-    // },
   },
   buttonRoot: {
     width: '10rem',
@@ -45,11 +45,17 @@ export const Home = () => {
 
   const classes = useStyles();
 
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+
   // pull in all shortened urls
   useEffect(() => {
     async function run() {
       try {
         setContentLoading(true);
+
+        const accessToken = await getAccessTokenSilently();
+        API.setAuthorization(accessToken);
+
         const dbMappings: IUrlMappingResponse[] = await getMappings();
         setMappings(dbMappings);
       } catch (err) {
@@ -61,7 +67,7 @@ export const Home = () => {
       }
     }
     run();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleChange = event => {
     setValue(event.target.value);
@@ -103,14 +109,49 @@ export const Home = () => {
     setMappings(newMappings);
   };
 
+  // useEffect(() => {
+  //   const getUserMetadata = async () => {
+  //     try {
+  //       const accessToken = await getAccessTokenSilently();
+
+  //       const userDetailsByIdUrl = `/api/mapping`;
+  //       console.log(accessToken);
+  //       const metadataResponse = await fetch(userDetailsByIdUrl, {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       });
+
+  //       const result = await metadataResponse.json();
+
+  //       console.log(result);
+  //     } catch (e) {
+  //       console.log(e.message);
+  //     }
+  //   };
+
+  //   getUserMetadata();
+  // });
+
   return (
     <div>
       <nav className={styles.navigation}>
         <h1>URL Shortener</h1>
+        <LoginButton />
+        <LogoutButton />
       </nav>
       <div className={styles.placeholder} />
 
       <form className={styles.formContainer} onSubmit={handleSubmit}>
+        {isAuthenticated ? (
+          <div>
+            <img src={user.picture} alt={user.name} />
+            <h2>{user.name}</h2>
+            <p>{user.email}</p>
+          </div>
+        ) : (
+          <div style={{ color: 'white' }}>not authed</div>
+        )}
         <TextField
           InputLabelProps={{ classes: { root: classes.inputLabelRoot } }}
           InputProps={{ classes: { root: classes.inputRoot, underline: classes.inputUnderline } }}
@@ -128,7 +169,6 @@ export const Home = () => {
           {submissionLoading ? <CircularProgress color="secondary" size={20} /> : 'Shorten'}
         </Button>
       </form>
-
       <section>
         {contentLoading ? (
           <div className={styles.loaderContainer}>

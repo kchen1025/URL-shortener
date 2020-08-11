@@ -17,30 +17,34 @@ export const fetchConfig = (HTTP_METHOD = 'GET', body: IBody): RequestInit => ({
 });
 
 export default class API {
-  static get(url: string, query?: IBody) {
+  public static setAuthorization(authorization: string) {
+    this.authorization = authorization;
+  }
+
+  public static get(url: string, query?: IBody) {
     if (query) {
       url = querystring.stringifyUrl({ url, query });
     }
     return this.makeRequest(url, 'GET');
   }
 
-  static post(url: string, data: IBody = {}) {
+  public static post(url: string, data: IBody = {}) {
     return this.makeRequest(url, 'POST', data);
   }
 
-  static delete(url: string, data: IBody = {}) {
+  public static delete(url: string, data: IBody = {}) {
     return this.makeRequest(url, 'DELETE', data);
   }
 
-  static put(url: string, data: IBody = {}) {
+  public static put(url: string, data: IBody = {}) {
     return this.makeRequest(url, 'PUT', data);
   }
 
-  static patch(url: string, data: IBody = {}) {
+  public static patch(url: string, data: IBody = {}) {
     return this.makeRequest(url, 'PATCH', data);
   }
 
-  static async makeRequest(url: string, verb: string, data?: IBody) {
+  public static async makeRequest(url: string, verb: string, data?: IBody) {
     const payload: RequestInit = {
       method: verb,
       credentials: 'same-origin',
@@ -54,7 +58,8 @@ export default class API {
       payload.body = JSON.stringify(data);
       payload.headers = {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.authorization}`
       };
     }
     const response = await fetch(url, payload);
@@ -97,4 +102,5 @@ export default class API {
     console.log(results); // log w/e it gave us to the console in case there is legit info
     throw new Error('An unknown error occurred!');
   }
+  private static authorization: string = undefined;
 }
