@@ -1,4 +1,4 @@
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import { Button, CircularProgress, makeStyles, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -35,7 +35,7 @@ const useStyles = makeStyles({
   }
 });
 
-export const Home = () => {
+const Home = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [mappings, setMappings] = useState([]);
@@ -109,30 +109,6 @@ export const Home = () => {
     setMappings(newMappings);
   };
 
-  // useEffect(() => {
-  //   const getUserMetadata = async () => {
-  //     try {
-  //       const accessToken = await getAccessTokenSilently();
-
-  //       const userDetailsByIdUrl = `/api/mapping`;
-  //       console.log(accessToken);
-  //       const metadataResponse = await fetch(userDetailsByIdUrl, {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`
-  //         }
-  //       });
-
-  //       const result = await metadataResponse.json();
-
-  //       console.log(result);
-  //     } catch (e) {
-  //       console.log(e.message);
-  //     }
-  //   };
-
-  //   getUserMetadata();
-  // });
-
   return (
     <div>
       <nav className={styles.navigation}>
@@ -183,6 +159,14 @@ export const Home = () => {
     </div>
   );
 };
+
+const Loading = () => {
+  return <div>LOADING</div>;
+};
+
+export default withAuthenticationRequired(Home, {
+  onRedirecting: () => <Loading />
+});
 
 async function getMappings(): Promise<IUrlMappingResponse[]> {
   return API.get('/api/mapping');

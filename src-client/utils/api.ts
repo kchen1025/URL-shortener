@@ -59,7 +59,7 @@ export default class API {
       payload.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.authorization}`
+        Authorization: this.authorization ? `Bearer ${this.authorization}` : ''
       };
     }
     const response = await fetch(url, payload);

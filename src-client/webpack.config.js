@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: './index.tsx',
@@ -8,6 +9,11 @@ module.exports = {
     // path: __dirname + "/../public/dist",
     path: path.join(__dirname, '../public', 'dist')
   },
+  plugins: [
+    new Dotenv({
+      path: './.env.local'
+    })
+  ],
 
   // Enable sourcemaps for debugging webpack's output.
   devtool: 'source-map',
