@@ -11,7 +11,7 @@ export const apiRouter = express.Router();
  * GET /api/mapping
  * Gets all mappings
  */
-apiRouter.get('/mapping', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+apiRouter.get('/mapping', checkJwt, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const UrlMappingConstructor = new UrlMapping();
   try {
     const result: UrlMappingType[] = await UrlMappingConstructor.getAll();
@@ -26,7 +26,7 @@ apiRouter.get('/mapping', async (req: express.Request, res: express.Response, ne
  * GET /api/mapping/:mappingId
  * Get mapping row for a specific id (for testing purposes)
  */
-apiRouter.get('/mapping/:mappingId', async (req, res, next) => {
+apiRouter.get('/mapping/:mappingId', checkJwt, async (req, res, next) => {
   const { mappingId } = req.params;
 
   // insert into db, on conflict, we want to return an error here
@@ -45,7 +45,7 @@ apiRouter.get('/mapping/:mappingId', async (req, res, next) => {
  * @param req.body.originalUrl {String} the original URL to be shortened
  * Send a request to generate a new shortId based on originalUrl, and return the new id
  */
-apiRouter.post('/generateShortId', async (req, res, next) => {
+apiRouter.post('/generateShortId', checkJwt, async (req, res, next) => {
   // validate it is a properly formatted url
   const { originalUrl } = req.body;
 

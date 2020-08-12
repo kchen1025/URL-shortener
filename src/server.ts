@@ -29,14 +29,8 @@ app.get('/*', (req, res, next) => {
 // log requests
 app.use(morgan('tiny'));
 
-app.use(checkJwt);
-
 app.use('/in', indexRouter);
 app.use('/api', apiRouter);
-
-app.get('/yeet', (req, res) => {
-  res.send('hello');
-});
 
 // error handler, parse out specific errors here
 app.use(errorHandler);
