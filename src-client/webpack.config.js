@@ -61,6 +61,7 @@ module.exports = {
   //   "react-dom": "ReactDOM",
   // },
   devServer: {
+    port: 9000,
     contentBase: path.join(__dirname, '/../public'),
     historyApiFallback: true,
     publicPath: '/dist/',

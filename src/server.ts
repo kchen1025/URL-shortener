@@ -5,7 +5,6 @@ import * as morgan from 'morgan';
 import { errorHandler } from './middlewares';
 import { apiRouter } from './routes/api';
 import { indexRouter } from './routes/index';
-import { checkJwt } from './utils/jwt';
 
 const app = express();
 
